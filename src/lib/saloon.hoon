@@ -6,8 +6,46 @@
 ::  Pure Hoon implementations are generally naive formally correct algorithms,
 ::  awaiting efficient jetting.
 ::
-::  @rs-compatible arm, single-precision floating-point
 |%
+:: complex compatible arm
++$  cpx  [real=@rs imag=@rs]
+++  complex
+  =/  tau   `cpx`[.6.2831853 .0]
+  =/  epsc  `cpx`[.1e-5 .1e-5]
+  |_  $:  r=$?(%n %u %d %z)   :: round nearest, up, down, to zero
+          rtol=_epsc          :: relative tolerance for precision of operations
+      ==
+  :: Comparisons
+  ++  isclose  !!
+  ++  allclose  !!
+  ++  isint  !!
+  ++  isreal  !!
+  ++  isimag  !!
+  :: Algebraic
+  ++  sgn  !!
+  ++  abs  
+    |=  x=cpx  ^-  @rs
+    (sqrt:rs (add:rs (mul:rs real.x real.x) (mul:rs imag.x imag.x)))
+  ++  sqrt  
+    |=  x=cpx  ^-  [cpx cpx]
+    =/  absx  (abs x)
+    =/  a  (sqrt:rs (div:rs (add:rs absx real.x) .2))
+    =/  b  (mul:rs (div:rs imag.x (abs:rs imag.x)) (sqrt:rs (div:rs (sub:rs absx real.x) .2)))
+    [[a b] [(mul:rs .-1 a) (mul:rs .-1 b)]]
+  ++  cbrt  !!
+  ++  arg  !!
+  ++  conj
+    |=  x=cpx  ^-  cpx
+    :-  real.x  (mul:^rs .-1 imag.x)
+  ++  pow  !!
+  ++  pow-n  !!
+  ++  log  !!
+  ++  log10  !!
+  ++  log2  !!
+  ++  exp  !!
+  ++  binomial  !!
+  -- :: complex
+::  @rs-compatible arm, single-precision floating-point
 ++  rs
   ::  mathematics constants to single precision
   =/  tau    .6.2831853
