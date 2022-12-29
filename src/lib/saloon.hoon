@@ -10,6 +10,7 @@
 :: complex compatible arm
 +$  cpx  [real=@rs imag=@rs]
 ++  complex
+  =/  i     `cpx`[.0 .1]
   =/  tau   `cpx`[.6.2831853 .0]
   =/  epsc  `cpx`[.1e-5 .1e-5]
   |_  $:  r=$?(%n %u %d %z)   :: round nearest, up, down, to zero
@@ -22,6 +23,21 @@
   ++  isreal  !!
   ++  isimag  !!
   :: Algebraic
+  ++  add  
+    |=  [x=cpx y=cpx]  ^-  cpx
+    [(add:rs real.x real.y) (add:rs imag.x imag.y)]
+  ++  sub  
+    |=  [x=cpx y=cpx]  ^-  cpx
+    [(sub:rs real.x real.y) (sub:rs imag.x imag.y)]
+  ++  mul  
+    |=  [x=cpx y=cpx]  ^-  cpx
+    :-  (sub:rs (mul:rs real.x real.y) (mul:rs imag.x imag.y))
+    (add:rs (mul:rs real.x imag.y) (mul:rs imag.x real.y))
+  ++  div  
+    |=  [x=cpx y=cpx]  ^-  cpx
+    =/  cd  (add:rs (mul:rs real.y real.y) (mul:rs imag.y imag.y))
+    :-  (div:rs (add:rs (mul:rs real.x real.y) (mul:rs imag.x imag.y)) cd)
+    (div:rs (sub:rs (mul:rs imag.x real.y) (mul:rs real.x imag.y)) cd)
   ++  sgn  !!
   ++  abs  
     |=  x=cpx  ^-  @rs
